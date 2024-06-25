@@ -1,0 +1,15 @@
+dash
+dash-bootstrap-components
+dash-core-components
+dash-daq
+dash-html-components
+dash-iconify
+dash-mantine-components==0.13.0a3
+dash-table
+Flask 
+google-auth
+google-cloud-bigquery
+gunicorn
+pandas
+pandas-gbq
+requests
