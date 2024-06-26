@@ -4,8 +4,11 @@ import plotly.express as px
 
 df = pd.read_csv('.\\dados\\roteirizacao.csv', delimiter = ';', encoding = 'utf-8',  usecols=['CD_DIR', 'CD_FIL','BAND'])
 
+df['BAND'] = df['BAND'].str.upper()
+
 df_group = df.groupby(['CD_DIR','BAND']).count()
 df_group = df_group.reset_index()
+df_group.rename(columns={'CD_FIL':'QTD_FILIAIS'}, inplace=True)
 
 app = Dash(__name__)
 
@@ -13,7 +16,7 @@ app.layout = html.Div([
     html.Div('ROTEIRIZAÇÃO', style={'textAlign': 'center', 'font-family':'Arial', "font-weight": "bold", 'fontSize': 40, 'color': '#13538a'}),
     html.Div('DADOS DE ORGANIZAÇÃO DAS LOJAS DO GRUPO BAHIA', style={'textAlign': 'center', 'font-family':'Arial', "font-weight": "bold", 'fontSize': 15, 'color': 'black'}),
     html.Div('FILTRO POR BANDEIRA', style={'textAlign': 'left', 'font-family':'Arial', "font-weight": "bold", 'fontSize': 15, 'color': 'black'}),
-    dcc.RadioItems(df_group['BAND'].unique(), 'Casas Bahia', style={'textAlign': 'left', 'font-family':'Arial', "font-weight": "bold", 'fontSize': 15, 'color': 'black'}, id='radio-selection'),
+    dcc.RadioItems(df_group['BAND'].unique(), 'CASAS BAHIA', style={'textAlign': 'left', 'font-family':'Arial', "font-weight": "bold", 'fontSize': 15, 'color': 'black'}, id='radio-selection'),
     dcc.Graph(id='graph-dados'),
     ], style={'margin': 'auto', 'marginTop': 100, 'border': '1px solid grey', 'padding': 20, 'textAlign': 'center'})
 
@@ -24,7 +27,7 @@ app.layout = html.Div([
 )
 def update_graph(value):
     filtered_df = df_group[df_group.BAND == value]
-    fig = px.line(filtered_df, x='CD_DIR', y='CD_FIL')
+    fig = px.line(filtered_df, x='CD_DIR', y='QTD_FILIAIS')
    
     fig.update_layout(
         plot_bgcolor='white',
