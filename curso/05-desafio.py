@@ -1,6 +1,7 @@
-from dash import Dash, html, dash_table, dcc, callback, Output, Input
+from dash import Dash, html, dcc, callback, Output, Input
 import pandas as pd
 import plotly.express as px
+import dash_bootstrap_components as dbc
 
 df = pd.read_csv('.\\dados\\roteirizacao.csv', delimiter = ';', encoding = 'utf-8',  usecols=['CD_DIR', 'CD_FIL','BAND'])
 
@@ -13,11 +14,18 @@ df_group.rename(columns={'CD_FIL':'QTD_FILIAIS'}, inplace=True)
 app = Dash(__name__)
 
 app.layout = html.Div([ 
-    html.Div('ROTEIRIZAÇÃO', style={'textAlign': 'center', 'font-family':'Arial', "font-weight": "bold", 'fontSize': 40, 'color': '#13538a'}),
+    html.H1('ROTEIRIZAÇÃO', style={'textAlign': 'center', 'font-family':'Arial', "font-weight": "bold", 'fontSize': 40, 'color': '#13538a'}),
     html.Div('DADOS DE ORGANIZAÇÃO DAS LOJAS DO GRUPO BAHIA', style={'textAlign': 'center', 'font-family':'Arial', "font-weight": "bold", 'fontSize': 15, 'color': 'black'}),
-    html.Div('FILTRO POR BANDEIRA', style={'textAlign': 'left', 'font-family':'Arial', "font-weight": "bold", 'fontSize': 15, 'color': 'black'}),
-    dcc.RadioItems(df_group['BAND'].unique(), 'CASAS BAHIA', style={'textAlign': 'left', 'font-family':'Arial', "font-weight": "bold", 'fontSize': 15, 'color': 'black'}, id='radio-selection'),
-    dcc.Graph(id='graph-dados'),
+    html.Br(),
+    dbc.Row([
+        dbc.Col([
+            html.Div('FILTRO POR BANDEIRA', style={'textAlign': 'left', 'font-family':'Arial', "font-weight": "bold", 'fontSize': 15, 'color': 'black'}),
+            dcc.RadioItems(df_group['BAND'].unique(), 'CASAS BAHIA', style={'textAlign': 'left', 'font-family':'Arial', "font-weight": "bold", 'fontSize': 15, 'color': 'black'}, id='radio-selection'),
+        ]),
+    ]),
+    dbc.Row([
+        dcc.Graph(id='graph-dados'),
+    ], style={'display':'flex', 'justifyContent':'center', 'alignItems':'center'}),
     ], style={'margin': 'auto', 'marginTop': 100, 'border': '1px solid grey', 'padding': 20, 'textAlign': 'center'})
 
 
@@ -30,7 +38,9 @@ def update_graph(value):
     fig = px.line(filtered_df, x='CD_DIR', y='QTD_FILIAIS')
    
     fig.update_layout(
+        showlegend=False,
         plot_bgcolor='white',
+        margin=dict(l=10, r=10, t=10, b=10),
         xaxis=dict(title="Diretoria"),
         yaxis=dict(title="Quantidade de lojas"),
         title={
@@ -55,8 +65,9 @@ def update_graph(value):
     fig.update_yaxes(
         mirror=True,
         ticks='outside',
-        showline=True,
         linecolor='black',
+        zeroline=False,
+        showline=False,
         gridcolor='lightgrey',
     )    
     return fig
